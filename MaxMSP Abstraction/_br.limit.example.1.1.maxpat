@@ -9,8 +9,9 @@
             "modernui": 1
         },
         "classnamespace": "box",
-        "rect": [ 85.0, 104.0, 1520.0, 630.0 ],
-        "description": "_br.limit.example.1.0 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
+        "rect": [ 85.0, 104.0, 793.0, 682.0 ],
+        "description": "_br.limit.example.1.1 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
+        "showontab": 1,
         "boxes": [
             {
                 "box": {
@@ -1042,7 +1043,7 @@
                     "numinlets": 1,
                     "numoutlets": 0,
                     "patching_rect": [ 630.0, 15.0, 463.0, 33.0 ],
-                    "text": "_br.limit.example.1.0 -- Created by Brian Riordan, guaguanco127@gmail.com\nhttps://github.com/guaguanco127/"
+                    "text": "_br.limit.example.1.1 -- Created by Brian Riordan, guaguanco127@gmail.com\nhttps://github.com/guaguanco127/"
                 }
             },
             {
@@ -1080,7 +1081,7 @@
                     "numinlets": 1,
                     "numoutlets": 0,
                     "patching_rect": [ 15.0, 118.0, 692.0, 60.0 ],
-                    "text": "Four files, same DSP inside:\nbr.limit.1.0 = stereo core, no UI (in: L, R, Drive, Ceiling, Release, Lookahead ms, True Peak, On/Off; out: L, R, gain reduction dB).\nbr.limit.ui.1.0 = the same with controls and a GR meter. br.limit.mono.1.0 and br.limit.mono.ui.1.0 = mono."
+                    "text": "Four files, same DSP inside:\nbr.limit.1.1 = stereo core, no UI (in: L, R, Drive, Ceiling, Release, Lookahead ms, True Peak, On/Off; out: L, R, gain reduction dB).\nbr.limit.ui.1.1 = the same with controls and a GR meter. br.limit.mono.1.1 and br.limit.mono.ui.1.1 = mono."
                 }
             },
             {
@@ -1153,8 +1154,8 @@
                     "maxclass": "comment",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 802.0, 134.0, 145.0, 20.0 ],
-                    "text": "A: br.limit.ui.1.0"
+                    "patching_rect": [ 905.0, 143.0, 145.0, 20.0 ],
+                    "text": "A: br.limit.ui.1.1"
                 }
             },
             {
@@ -1168,11 +1169,11 @@
                     "lockeddragscroll": 0,
                     "lockedsize": 0,
                     "maxclass": "bpatcher",
-                    "name": "br.limit.ui.1.0.maxpat",
+                    "name": "br.limit.ui.1.1.maxpat",
                     "numinlets": 8,
-                    "numoutlets": 3,
+                    "numoutlets": 4,
                     "offset": [ 0.0, 0.0 ],
-                    "outlettype": [ "signal", "signal", "signal" ],
+                    "outlettype": [ "signal", "signal", "signal", "" ],
                     "patching_rect": [ 802.0, 168.0, 133.0, 162.0 ],
                     "viewvisibility": 1
                 }
@@ -1196,10 +1197,10 @@
                     "id": "obj-b",
                     "maxclass": "newobj",
                     "numinlets": 7,
-                    "numoutlets": 2,
-                    "outlettype": [ "signal", "signal" ],
+                    "numoutlets": 3,
+                    "outlettype": [ "signal", "signal", "" ],
                     "patching_rect": [ 1052.0, 343.0, 300.0, 22.0 ],
-                    "text": "br.limit.mono.1.0"
+                    "text": "br.limit.mono.1.1"
                 }
             },
             {
@@ -1440,9 +1441,292 @@
                     "patching_rect": [ 1367.0, 418.0, 130.0, 20.0 ],
                     "text": "B gain reduction dB"
                 }
+            },
+            {
+                "box": {
+                    "fontname": "Arial",
+                    "fontsize": 12.0,
+                    "id": "obj-1",
+                    "linecount": 4,
+                    "maxclass": "comment",
+                    "numinlets": 1,
+                    "numoutlets": 0,
+                    "patching_rect": [ 15.0, 370.0, 560.0, 60.0 ],
+                    "text": "State outlet: every UI and core has a last outlet that sends drive <dB>, ceiling <dBFS>, release <ms>, lookahead <ms>, truepeak 0/1 and on 0/1 the moment a control changes (numbers only, not signals). Open [p State outlet] (also a tab at the top) to see it read by name with [route drive ceiling release lookahead truepeak on]."
+                }
+            },
+            {
+                "box": {
+                    "fontname": "Arial",
+                    "fontsize": 12.0,
+                    "id": "obj-2",
+                    "maxclass": "newobj",
+                    "numinlets": 1,
+                    "numoutlets": 0,
+                    "patcher": {
+                        "fileversion": 1,
+                        "appversion": {
+                            "major": 9,
+                            "minor": 1,
+                            "revision": 4,
+                            "architecture": "x64",
+                            "modernui": 1
+                        },
+                        "classnamespace": "box",
+                        "rect": [ 0.0, 26.0, 793.0, 656.0 ],
+                        "showontab": 1,
+                        "visible": 1,
+                        "boxes": [
+                            {
+                                "box": {
+                                    "comment": "State from A (UI)",
+                                    "id": "obj-1",
+                                    "index": 1,
+                                    "maxclass": "inlet",
+                                    "numinlets": 0,
+                                    "numoutlets": 1,
+                                    "outlettype": [ "" ],
+                                    "patching_rect": [ 30.0, 95.0, 30.0, 30.0 ]
+                                }
+                            },
+                            {
+                                "box": {
+                                    "fontname": "Arial",
+                                    "fontsize": 12.0,
+                                    "id": "obj-2",
+                                    "linecount": 4,
+                                    "maxclass": "comment",
+                                    "numinlets": 1,
+                                    "numoutlets": 0,
+                                    "patching_rect": [ 30.0, 15.0, 600.0, 60.0 ],
+                                    "text": "Each br.limit UI/core sends its state out of its LAST outlet as named messages: drive <dB>, ceiling <dBFS>, release <ms>, lookahead <ms>, truepeak 0/1 and on 0/1, the moment a control changes. Read them by NAME with [route drive ceiling release lookahead truepeak on], never by position: names stay put when a tool gains controls."
+                                }
+                            },
+                            {
+                                "box": {
+                                    "fontname": "Arial",
+                                    "fontsize": 12.0,
+                                    "id": "obj-3",
+                                    "maxclass": "comment",
+                                    "numinlets": 1,
+                                    "numoutlets": 0,
+                                    "patching_rect": [ 70.0, 100.0, 58.0, 20.0 ],
+                                    "text": "A (UI)"
+                                }
+                            },
+                            {
+                                "box": {
+                                    "fontname": "Arial",
+                                    "fontsize": 12.0,
+                                    "id": "obj-4",
+                                    "maxclass": "newobj",
+                                    "numinlets": 7,
+                                    "numoutlets": 7,
+                                    "outlettype": [ "", "", "", "", "", "", "" ],
+                                    "patching_rect": [ 30.0, 135.0, 359.0, 22.0 ],
+                                    "text": "route drive ceiling release lookahead truepeak on"
+                                }
+                            },
+                            {
+                                "box": {
+                                    "format": 6,
+                                    "id": "obj-5",
+                                    "maxclass": "flonum",
+                                    "numinlets": 1,
+                                    "numoutlets": 2,
+                                    "outlettype": [ "", "bang" ],
+                                    "parameter_enable": 0,
+                                    "patching_rect": [ 30.0, 170.0, 50.0, 22.0 ]
+                                }
+                            },
+                            {
+                                "box": {
+                                    "fontname": "Arial",
+                                    "fontsize": 12.0,
+                                    "id": "obj-6",
+                                    "maxclass": "comment",
+                                    "numinlets": 1,
+                                    "numoutlets": 0,
+                                    "patching_rect": [ 30.0, 195.0, 51.0, 20.0 ],
+                                    "text": "drive"
+                                }
+                            },
+                            {
+                                "box": {
+                                    "format": 6,
+                                    "id": "obj-7",
+                                    "maxclass": "flonum",
+                                    "numinlets": 1,
+                                    "numoutlets": 2,
+                                    "outlettype": [ "", "bang" ],
+                                    "parameter_enable": 0,
+                                    "patching_rect": [ 100.0, 170.0, 50.0, 22.0 ]
+                                }
+                            },
+                            {
+                                "box": {
+                                    "fontname": "Arial",
+                                    "fontsize": 12.0,
+                                    "id": "obj-8",
+                                    "maxclass": "comment",
+                                    "numinlets": 1,
+                                    "numoutlets": 0,
+                                    "patching_rect": [ 100.0, 195.0, 65.0, 20.0 ],
+                                    "text": "ceiling"
+                                }
+                            },
+                            {
+                                "box": {
+                                    "format": 6,
+                                    "id": "obj-9",
+                                    "maxclass": "flonum",
+                                    "numinlets": 1,
+                                    "numoutlets": 2,
+                                    "outlettype": [ "", "bang" ],
+                                    "parameter_enable": 0,
+                                    "patching_rect": [ 181.0, 170.0, 50.0, 22.0 ]
+                                }
+                            },
+                            {
+                                "box": {
+                                    "fontname": "Arial",
+                                    "fontsize": 12.0,
+                                    "id": "obj-10",
+                                    "maxclass": "comment",
+                                    "numinlets": 1,
+                                    "numoutlets": 0,
+                                    "patching_rect": [ 181.0, 195.0, 65.0, 20.0 ],
+                                    "text": "release"
+                                }
+                            },
+                            {
+                                "box": {
+                                    "format": 6,
+                                    "id": "obj-11",
+                                    "maxclass": "flonum",
+                                    "numinlets": 1,
+                                    "numoutlets": 2,
+                                    "outlettype": [ "", "bang" ],
+                                    "parameter_enable": 0,
+                                    "patching_rect": [ 262.0, 170.0, 50.0, 22.0 ]
+                                }
+                            },
+                            {
+                                "box": {
+                                    "fontname": "Arial",
+                                    "fontsize": 12.0,
+                                    "id": "obj-12",
+                                    "maxclass": "comment",
+                                    "numinlets": 1,
+                                    "numoutlets": 0,
+                                    "patching_rect": [ 262.0, 195.0, 79.0, 20.0 ],
+                                    "text": "lookahead"
+                                }
+                            },
+                            {
+                                "box": {
+                                    "id": "obj-13",
+                                    "maxclass": "number",
+                                    "numinlets": 1,
+                                    "numoutlets": 2,
+                                    "outlettype": [ "", "bang" ],
+                                    "parameter_enable": 0,
+                                    "patching_rect": [ 359.0, 170.0, 50.0, 22.0 ]
+                                }
+                            },
+                            {
+                                "box": {
+                                    "fontname": "Arial",
+                                    "fontsize": 12.0,
+                                    "id": "obj-14",
+                                    "maxclass": "comment",
+                                    "numinlets": 1,
+                                    "numoutlets": 0,
+                                    "patching_rect": [ 359.0, 195.0, 72.0, 20.0 ],
+                                    "text": "truepeak"
+                                }
+                            },
+                            {
+                                "box": {
+                                    "id": "obj-15",
+                                    "maxclass": "number",
+                                    "numinlets": 1,
+                                    "numoutlets": 2,
+                                    "outlettype": [ "", "bang" ],
+                                    "parameter_enable": 0,
+                                    "patching_rect": [ 448.0, 170.0, 50.0, 22.0 ]
+                                }
+                            },
+                            {
+                                "box": {
+                                    "fontname": "Arial",
+                                    "fontsize": 12.0,
+                                    "id": "obj-16",
+                                    "maxclass": "comment",
+                                    "numinlets": 1,
+                                    "numoutlets": 0,
+                                    "patching_rect": [ 448.0, 195.0, 40.0, 20.0 ],
+                                    "text": "on"
+                                }
+                            }
+                        ],
+                        "lines": [
+                            {
+                                "patchline": {
+                                    "destination": [ "obj-4", 0 ],
+                                    "source": [ "obj-1", 0 ]
+                                }
+                            },
+                            {
+                                "patchline": {
+                                    "destination": [ "obj-11", 0 ],
+                                    "source": [ "obj-4", 3 ]
+                                }
+                            },
+                            {
+                                "patchline": {
+                                    "destination": [ "obj-13", 0 ],
+                                    "source": [ "obj-4", 4 ]
+                                }
+                            },
+                            {
+                                "patchline": {
+                                    "destination": [ "obj-15", 0 ],
+                                    "source": [ "obj-4", 5 ]
+                                }
+                            },
+                            {
+                                "patchline": {
+                                    "destination": [ "obj-5", 0 ],
+                                    "source": [ "obj-4", 0 ]
+                                }
+                            },
+                            {
+                                "patchline": {
+                                    "destination": [ "obj-7", 0 ],
+                                    "source": [ "obj-4", 1 ]
+                                }
+                            },
+                            {
+                                "patchline": {
+                                    "destination": [ "obj-9", 0 ],
+                                    "source": [ "obj-4", 2 ]
+                                }
+                            }
+                        ]
+                    },
+                    "patching_rect": [ 893.0, 348.0, 128.0, 22.0 ],
+                    "text": "p \"State outlet\""
+                }
             }
         ],
         "lines": [
+            {
+                "patchline": {
+                    "destination": [ "obj-2", 0 ],
+                    "source": [ "obj-a", 3 ]
+                }
+            },
             {
                 "patchline": {
                     "destination": [ "obj-gaina", 1 ],
@@ -1551,6 +1835,7 @@
             {
                 "patchline": {
                     "destination": [ "obj-b", 0 ],
+                    "midpoints": [ 811.5, 125.49409484863281, 1061.5, 125.49409484863281 ],
                     "order": 0,
                     "source": [ "obj-source", 0 ]
                 }

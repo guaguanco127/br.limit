@@ -1,13 +1,13 @@
 # Max/MSP Patches, Abstractions, Externals, RNBO and VSTs
 
-## br.limit.1.0
+## br.limit.1.1
    
 By Brian Riordan  
 [guaguanco127@gmail.com](mailto:guaguanco127@gmail.com)  
 [brianriordanmusic@gmail.com](mailto:brianriordanmusic@gmail.com)  
 [https://www.brianriordanmusic.com/](https://www.brianriordanmusic.com/) 
   
-Repository for br.limit.1.0, with all related files, can be found here: [https://github.com/guaguanco127/br.limit](https://github.com/guaguanco127/br.limit)  
+Repository for br.limit.1.1, with all related files, can be found here: [https://github.com/guaguanco127/br.limit](https://github.com/guaguanco127/br.limit)  
 Additional programs can be found here: [https://github.com/guaguanco127/br.max](https://github.com/guaguanco127/br.max)
 
 These files were created with Max 9, or RNBO.
@@ -49,21 +49,26 @@ Changing Lookahead or True Peak changes the latency, so instead of jumping the o
 
 **True Peak tip:** with True Peak on, peaks between samples stay within about 0.2 dB of the Ceiling. For full safety on those, set the Ceiling to -1 dB.
 
+## <a name="New"></a>What's new in 1.1
+
+- New [State outlet](#State): every abstraction and the RNBO patch now send `drive 6.`, `ceiling -0.3`, `release 100.`, `lookahead 1.5`, `truepeak 0` and `on 1` out of their last outlet the moment a setting changes, so a display, Mira or another patch can follow along.
+- The inlets and the audio outlets are unchanged. Only the file names move from 1.0 to 1.1.
+
 ## <a name="Files"></a>Which file?
 
 | File | What it is |
 |---|---|
-| br.limit.1.0 | Stereo, no UI. The plain object to patch with |
-| br.limit.ui.1.0 | Stereo, with controls and a gain reduction meter, ready for a [bpatcher] |
-| br.limit.mono.1.0 | Mono, no UI |
-| br.limit.mono.ui.1.0 | Mono, with the same controls and meter, ready for a [bpatcher] |
-| _br.limit.example.1.0 | Example patch: open this first |
+| br.limit.1.1 | Stereo, no UI. The plain object to patch with |
+| br.limit.ui.1.1 | Stereo, with controls and a gain reduction meter, ready for a [bpatcher] |
+| br.limit.mono.1.1 | Mono, no UI |
+| br.limit.mono.ui.1.1 | Mono, with the same controls and meter, ready for a [bpatcher] |
+| _br.limit.example.1.1 | Example patch: open this first |
 
 Each UI version contains its plain version and has the same inlets and outlets, so either swaps in without rewiring (only Lookahead differs: the UI takes a menu item, the plain version takes ms). Open a UI version in patching mode for comments on how it is built.
 
 ## <a name="Use"></a>How To Use
 
-**br.limit.1.0 (stereo)**
+**br.limit.1.1 (stereo)**
 
 | Inlet | Control | Type | Range | Default |
 |---|---|---|---|---|
@@ -76,9 +81,10 @@ Each UI version contains its plain version and has the same inlets and outlets, 
 | 7 | True Peak | Signal or Int (UI: Int only) | 0 off, 1 on | 0 |
 | 8 | On/Off | Signal or Int (UI: Int only) | 1 on, 0 off | 1 |
 
-Outlets 1 / 2: Left Out / Right Out (Signal). Outlet 3: Gain Reduction (Signal), dB, 0 = none
+Outlets 1 / 2: Left Out / Right Out (Signal). Outlet 3: Gain Reduction (Signal), dB, 0 = none  
+Outlet 4: State (Message), see [State outlet](#State)
 
-**br.limit.mono.1.0 (mono)**
+**br.limit.mono.1.1 (mono)**
 
 | Inlet | Control | Type | Range | Default |
 |---|---|---|---|---|
@@ -90,9 +96,25 @@ Outlets 1 / 2: Left Out / Right Out (Signal). Outlet 3: Gain Reduction (Signal),
 | 6 | True Peak | Signal or Int (UI: Int only) | 0 off, 1 on | 0 |
 | 7 | On/Off | Signal or Int (UI: Int only) | 1 on, 0 off | 1 |
 
-Outlet 1: Out (Signal). Outlet 2: Gain Reduction (Signal), dB, 0 = none
+Outlet 1: Out (Signal). Outlet 2: Gain Reduction (Signal), dB, 0 = none  
+Outlet 3: State (Message), see [State outlet](#State)
 
 Both versions use the same code. In the UI versions a number into an inlet moves its control, so the screen always shows what you hear. Hover any inlet or outlet in Max for its description.
+
+## <a name="State"></a>State outlet
+
+The last outlet of every abstraction (State) sends the current settings as named messages the moment they change: `drive 6.`, `ceiling -0.3`, `release 100.`, `lookahead 1.5`, `truepeak 0` and `on 1`. Use it to keep a display, Mira or another patch in sync. Pick them out by name with [route drive ceiling release lookahead truepeak on], not by position, so your patch keeps working if a later version adds controls. Repeats are filtered out.
+
+| Message | Type | Range |
+|---|---|---|
+| drive | Float | dB, 0 to 24 |
+| ceiling | Float | dBFS, -30 to 0 |
+| release | Float | ms, 1 to 1000 |
+| lookahead | Float | ms, 0 to 5 |
+| truepeak | Int | 0 off, 1 on |
+| on | Int | 0 off, 1 on |
+
+Only numbers are reported: if a signal drives an inlet of the plain version, nothing comes out of State. Lookahead is reported in ms, the value that reaches the core. The UI's Lookahead inlet takes the menu index 0-5 (0, 0.5, 1, 1.5, 3, 5 ms), so send a `lookahead` State message to a plain version, or map it to the index first. The example patch has a State outlet tab that shows this, and the RNBO patch shows the same [route drive ceiling release lookahead truepeak on].
 
 ## <a name="Credits"></a>Credits
 
