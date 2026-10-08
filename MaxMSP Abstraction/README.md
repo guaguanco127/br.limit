@@ -1,0 +1,115 @@
+# Max/MSP Abstraction: br.limit.1.0  
+   
+By Brian Riordan  
+[guaguanco127@gmail.com](mailto:guaguanco127@gmail.com)  
+[brianriordanmusic@gmail.com](mailto:brianriordanmusic@gmail.com)  
+[https://www.brianriordanmusic.com/](https://www.brianriordanmusic.com/) 
+  
+Repository for br.limit.1.0, with all related files, can be found here: [https://github.com/guaguanco127/br.limit](https://github.com/guaguanco127/br.limit)  
+Additional programs can be found here: [https://github.com/guaguanco127/br.max](https://github.com/guaguanco127/br.max)
+
+These files were created with Max 9.
+
+## Table of Contents 
+
+[About](#About)   
+[Lookahead and Latency](#Latency)  
+[Which file?](#Files)  
+[What is an abstraction?](#Abstraction)  
+[How To Install](#Install)  
+[How To Use](#Use)  
+[Credits](#Credits) 
+
+## <a name="About"></a>About
+
+A safety brickwall limiter. The output never goes above the Ceiling, however hard Drive pushes it. In stereo the louder side sets the gain for both sides, so the stereo image never moves. Every control is click-free. Stereo and mono versions. Works at any sample rate.
+
+**Uses:**  
+**Protecting your speakers and ears:** the last thing before [dac~] in a live patch, so feedback, a wild synth patch or a dropped cable can't blast the PA.  
+**Catching peaks:** keep loud hits from clipping a recording, a stream or the next effect in a chain.  
+**Making things louder:** push Drive up and let the limiter hold the peaks at the Ceiling.  
+
+**Drive:** 0 to +24 dB. Pushes the input into the limiter: louder, and the Ceiling still holds. Default 0.  
+**Ceiling:** -30 to 0 dBFS. The output never goes above it. Default -0.3.  
+**Release:** 1 to 1000 ms. How fast the level comes back after a peak. Short = louder but can distort, long = smoother. Default 100.  
+**Lookahead:** 0 to 5 ms. How early the limiter starts turning down before a peak. Default 1.5.  
+**True Peak:** also catches peaks that fall between samples, which can still clip a converter or an mp3. Default off.  
+**On/Off:** off passes the input untouched, without Drive, but still delayed by the latency so nothing jumps. Default on.  
+**Gain reduction:** the last outlet, in dB, as a positive number: 0 = none, 6 = turned down 6 dB. The UI versions show it on a meter.
+
+## <a name="Latency"></a>Lookahead and Latency
+
+With Lookahead at 0 the limiter adds **no latency at all**: the gain drops on the peak itself. The Ceiling still holds, but on hard hits the sudden gain change can sound harsh.
+
+Above 0 the limiter sees each peak coming and turns down smoothly over the lookahead time, which is cleaner. To do that, the audio is delayed by the same amount: 1.5 ms is about the delay of standing half a metre further from a speaker. It only matters if you mix the limited signal with an unlimited copy of the same sound, which would sound phasey.
+
+True Peak adds 6 more samples of latency (about 0.13 ms at 48 kHz).
+
+Changing Lookahead or True Peak changes the latency, so instead of jumping the output fades out, switches while silent, and fades back in, about 10 to 20 ms in all. Set them before you play. The UI versions use a menu of steps (0, 0.5, 1, 1.5, 3, 5 ms) for that reason, so each change is one deliberate pick.
+
+**True Peak tip:** with True Peak on, peaks between samples stay within about 0.2 dB of the Ceiling. For full safety on those, set the Ceiling to -1 dB.
+
+## <a name="Files"></a>Which file?
+
+| File | What it is |
+|---|---|
+| br.limit.1.0 | Stereo, no UI. The plain object to patch with |
+| br.limit.ui.1.0 | Stereo, with controls and a gain reduction meter, ready for a [bpatcher] |
+| br.limit.mono.1.0 | Mono, no UI |
+| br.limit.mono.ui.1.0 | Mono, with the same controls and meter, ready for a [bpatcher] |
+| _br.limit.example.1.0 | Example patch: open this first |
+
+Each UI version contains its plain version and has the same inlets and outlets, so either swaps in without rewiring (only Lookahead differs: the UI takes a menu item, the plain version takes ms). Open a UI version in patching mode for comments on how it is built.
+
+## <a name="Abstraction"></a>What is an Abstraction?
+
+An abstraction is a subpatcher that is saved as an external file, and can be used just like a standard Max object. As long as your abstraction can be found in the Max file path, you can type its name into a new object box and it will be loaded directly into your patch.  
+
+By saving your logic in an abstraction, you can create modules that can be used in future work with little or no additional programming.
+
+## <a name="Install"></a>How To Install
+
+1. Make sure you have Max 9 installed, and that the Max patch you are using is saved inside a folder.  
+
+2. Copy the .maxpat files you want into the same folder as your patch. Each UI version needs its plain version next to it (br.limit.ui.1.0 uses br.limit.1.0; br.limit.mono.ui.1.0 uses br.limit.mono.1.0).
+
+3. In your patch, create an object called br.limit.1.0 (or br.limit.mono.1.0). For the version with controls, create a [bpatcher] and choose br.limit.ui.1.0.maxpat (or br.limit.mono.ui.1.0.maxpat) as its patcher.
+
+## <a name="Use"></a>How To Use
+
+**br.limit.1.0 (stereo)**
+
+| Inlet | Control | Type | Range | Default |
+|---|---|---|---|---|
+| 1 | Left In | Signal | | |
+| 2 | Right In | Signal | | |
+| 3 | Drive | Signal or Float (UI: Float only) | dB 0 to 24 | 0 |
+| 4 | Ceiling | Signal or Float (UI: Float only) | dBFS -30 to 0 | -0.3 |
+| 5 | Release | Signal or Float (UI: Float only) | ms 1 to 1000 | 100 |
+| 6 | Lookahead | Signal or Float (UI: Int, menu item 0-5 = 0, 0.5, 1, 1.5, 3, 5 ms) | ms 0 to 5: 0 = no latency | 1.5 |
+| 7 | True Peak | Signal or Int (UI: Int only) | 0 off, 1 on | 0 |
+| 8 | On/Off | Signal or Int (UI: Int only) | 1 on, 0 off | 1 |
+
+Outlets 1 / 2: Left Out / Right Out (Signal). Outlet 3: Gain Reduction (Signal), dB, 0 = none
+
+**br.limit.mono.1.0 (mono)**
+
+| Inlet | Control | Type | Range | Default |
+|---|---|---|---|---|
+| 1 | In | Signal | | |
+| 2 | Drive | Signal or Float (UI: Float only) | dB 0 to 24 | 0 |
+| 3 | Ceiling | Signal or Float (UI: Float only) | dBFS -30 to 0 | -0.3 |
+| 4 | Release | Signal or Float (UI: Float only) | ms 1 to 1000 | 100 |
+| 5 | Lookahead | Signal or Float (UI: Int, menu item 0-5 = 0, 0.5, 1, 1.5, 3, 5 ms) | ms 0 to 5: 0 = no latency | 1.5 |
+| 6 | True Peak | Signal or Int (UI: Int only) | 0 off, 1 on | 0 |
+| 7 | On/Off | Signal or Int (UI: Int only) | 1 on, 0 off | 1 |
+
+Outlet 1: Out (Signal). Outlet 2: Gain Reduction (Signal), dB, 0 = none
+
+Both versions use the same code. In the UI versions a number into an inlet moves its control, so the screen always shows what you hear. Hover any inlet or outlet in Max for its description.
+
+Double-click the object to see inside it and study how it was built.
+
+## <a name="Credits"></a>Credits
+
+True Peak detection follows the 4x oversampled true-peak method of ITU-R BS.1770.
