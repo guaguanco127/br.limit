@@ -58,7 +58,7 @@ Changing Lookahead or True Peak changes the latency, so instead of jumping the o
 | br.limit.ui.1.2 | Stereo, with controls and a gain reduction meter, ready for a [bpatcher] |
 | br.limit.mono.1.2 | Mono, no UI |
 | br.limit.mono.ui.1.2 | Mono, with the same controls and meter, ready for a [bpatcher] |
-| _br.limit.example.1.2 | Example patch: open this first |
+| _br.limit.example.1.2 | Example patch: open this first (its stereo core tab shows br.limit.1.2, the plain stereo version) |
 
 Each UI version contains its plain version and has the same inlets and audio outlets (plus State last), so either swaps in without rewiring (only Lookahead differs: the UI takes a menu item, the plain version takes ms). Open a UI version in patching mode for comments on how it is built.
 
