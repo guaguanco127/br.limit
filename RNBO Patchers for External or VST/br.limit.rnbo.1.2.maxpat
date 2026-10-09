@@ -15,7 +15,7 @@
             780.0,
             680.0
         ],
-        "description": "br.limit.rnbo.1.1 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
+        "description": "br.limit.rnbo.1.2 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
         "boxes": [
             {
                 "box": {
@@ -30,7 +30,7 @@
                         520.0,
                         33.0
                     ],
-                    "text": "br.limit.rnbo.1.1 -- Created by Brian Riordan, guaguanco127@gmail.com\nhttps://github.com/guaguanco127/"
+                    "text": "br.limit.rnbo.1.2 -- Created by Brian Riordan, guaguanco127@gmail.com\nhttps://github.com/guaguanco127/"
                 }
             },
             {
@@ -508,7 +508,7 @@
                                                         "fontface": 0,
                                                         "numinlets": 8,
                                                         "id": "obj-code",
-                                                        "code": "// br.limit.1.1 -- stereo safety brickwall limiter\n// Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/\n// MUST MATCH: the core, the UI by reference and the RNBO host embed this same code\n// in1/in2 audio L/R\n// in3 drive dB 0..24: pushes the input into the limiter; louder, the ceiling still holds\n// in4 ceiling dBFS -30..0: the output never goes above it\n// in5 release ms 1..1000: how fast the level comes back after a peak\n// in6 lookahead ms 0..5: 0 = no latency, the gain drops on the peak itself, which can sound harsh on hard hits;\n//     above 0 the gain starts dropping that much early, cleaner, and the audio is late by the same amount\n// in7 true peak 0/1: also catches peaks that fall between samples with a 4x oversampled check, adds 6 samples latency\n// in8 on/off 1 on, 0 off: off = the input passes untouched, no drive, still delayed by the latency so nothing jumps\n// out1/out2 audio L/R, out3 gain reduction dB, positive: 0 = none, 6 = turned down 6 dB\n//\n// How the ceiling is guaranteed: for every sample the limiter works out the gain that would put it exactly\n// on the ceiling. The louder side sets it for both, so the stereo image never moves. It holds the lowest\n// gain seen over the lookahead, lets it recover at the Release speed, then averages it over the lookahead.\n// That average can only be at or below the gain each delayed sample needs, so nothing gets through, and the\n// gain ramps down smoothly over the lookahead instead of jumping. With lookahead 0 the gain jumps.\n// A final clip at the ceiling only catches rounding dust.\n//\n// Changing Lookahead or True Peak changes the latency, which would make the audio jump. Instead the output\n// fades out over 5 ms, switches while silent, waits until the limiter has refilled, and fades back in.\n// Set them before you play. Changes that arrive during a fade are taken at the next one.\n\n// lookahead up to 4000 samples, 5 ms at 768 kHz, + 6 for true peak\nDelay aL(4100);\nDelay aR(4100);\n// the input without drive, for Off\nDelay rL(4100);\nDelay rR(4100);\nDelay yd(4100);\n// lowest-gain queue: value, sample number\nData dq(4096, 2);\nHistory started(0);\nHistory curN(0);\nHistory curT(0);\nHistory dipR(0);\nHistory dipS(0);\nHistory holdC(0);\nHistory yS(1);\nHistory sumS(0);\nHistory qHead(0);\nHistory qCnt(0);\nHistory tick(0);\nHistory ceilS(0.966051);\nHistory driveS(1);\nHistory onS(1);\n\n// read all state first\nst = started;\nn = curN;\ntp = curT;\ndr = dipR;\nds = dipS;\nhc = holdC;\nrs = 0;\ny = yS;\nsm = sumS;\nqh = qHead;\nqc = qCnt;\nt = tick;\ncl = ceilS;\ndv = driveS;\nen = onS;\n\n// drive, ceiling and on/off glide over 20 ms so nothing clicks\nk = 1 - exp(-1 / mstosamps(20));\ndv = dv + (dbtoa(clip(in3, 0, 24)) - dv) * k;\ncl = cl + (dbtoa(clip(in4, -30, 0)) - cl) * k;\nen = en + (clip(floor(in8 + 0.5), 0, 1) - en) * k;\nkr = 1 - exp(-1 / max(1, mstosamps(clip(in5, 1, 1000))));\nnT = clip(floor(mstosamps(clip(in6, 0, 5)) + 0.5), 0, 4000);\ntpT = clip(floor(in7 + 0.5), 0, 1);\n\n// DRIVE: everything below works on the driven input\ndL = in1 * dv;\ndR = in2 * dv;\n\n// at load: start silent on the settings, fill up, then fade in over 5 ms\nif (st == 0) {\n    n = nT;\n    tp = tpT;\n    dr = 1;\n    ds = 2;\n    hc = 2 * n + 8;\n    rs = 1;\n    st = 1;\n}\n\n// LATENCY CHANGE: fade out, switch while silent, hold until refilled, fade in\ndinc = 1 / mstosamps(5);\nif (ds == 0) {\n    if (nT != n || tpT != tp) {\n        ds = 1;\n    }\n}\nif (ds == 1) {\n    dr = dr + dinc;\n    if (dr >= 1) {\n        dr = 1;\n        ds = 2;\n        n = nT;\n        tp = tpT;\n        hc = 2 * n + 8;\n        rs = 1;\n    }\n} else if (ds == 2) {\n    hc = hc - 1;\n    if (hc <= 0) {\n        ds = 3;\n    }\n} else if (ds == 3) {\n    dr = dr - dinc;\n    if (dr <= 0) {\n        dr = 0;\n        ds = 0;\n    }\n}\ndipG = 0.5 + 0.5 * cos(pi * dr);\n\n// DETECT: the louder side, sample peaks or true peaks\npk = max(abs(dL), abs(dR));\nxL0 = 0;\nxL1 = 0;\nxL2 = 0;\nxL3 = 0;\nxL4 = 0;\nxL5 = 0;\nxL6 = 0;\nxL7 = 0;\nxL8 = 0;\nxL9 = 0;\nxL10 = 0;\nxL11 = 0;\nxR0 = 0;\nxR1 = 0;\nxR2 = 0;\nxR3 = 0;\nxR4 = 0;\nxR5 = 0;\nxR6 = 0;\nxR7 = 0;\nxR8 = 0;\nxR9 = 0;\nxR10 = 0;\nxR11 = 0;\niL1 = 0;\niL2 = 0;\niL3 = 0;\niR1 = 0;\niR2 = 0;\niR3 = 0;\nif (tp > 0) {\n    xL0 = dL;\n    xL1 = aL.read(1);\n    xL2 = aL.read(2);\n    xL3 = aL.read(3);\n    xL4 = aL.read(4);\n    xL5 = aL.read(5);\n    xL6 = aL.read(6);\n    xL7 = aL.read(7);\n    xL8 = aL.read(8);\n    xL9 = aL.read(9);\n    xL10 = aL.read(10);\n    xL11 = aL.read(11);\n    xR0 = dR;\n    xR1 = aR.read(1);\n    xR2 = aR.read(2);\n    xR3 = aR.read(3);\n    xR4 = aR.read(4);\n    xR5 = aR.read(5);\n    xR6 = aR.read(6);\n    xR7 = aR.read(7);\n    xR8 = aR.read(8);\n    xR9 = aR.read(9);\n    xR10 = aR.read(10);\n    xR11 = aR.read(11);\n    iL1 = -0.001272 * xL0 + 0.007982 * xL1 - 0.022830 * xL2 + 0.050721 * xL3 - 0.106961 * xL4 + 0.290377 * xL5 + 0.897104 * xL6 - 0.164139 * xL7 + 0.073268 * xL8 - 0.034630 * xL9 + 0.014175 * xL10 - 0.003795 * xL11;\n    iL2 = -0.003314 * xL0 + 0.015275 * xL1 - 0.039987 * xL2 + 0.086227 * xL3 - 0.185502 * xL4 + 0.627302 * xL5 + 0.627302 * xL6 - 0.185502 * xL7 + 0.086227 * xL8 - 0.039987 * xL9 + 0.015275 * xL10 - 0.003314 * xL11;\n    iL3 = -0.003795 * xL0 + 0.014175 * xL1 - 0.034630 * xL2 + 0.073268 * xL3 - 0.164139 * xL4 + 0.897104 * xL5 + 0.290377 * xL6 - 0.106961 * xL7 + 0.050721 * xL8 - 0.022830 * xL9 + 0.007982 * xL10 - 0.001272 * xL11;\n    iR1 = -0.001272 * xR0 + 0.007982 * xR1 - 0.022830 * xR2 + 0.050721 * xR3 - 0.106961 * xR4 + 0.290377 * xR5 + 0.897104 * xR6 - 0.164139 * xR7 + 0.073268 * xR8 - 0.034630 * xR9 + 0.014175 * xR10 - 0.003795 * xR11;\n    iR2 = -0.003314 * xR0 + 0.015275 * xR1 - 0.039987 * xR2 + 0.086227 * xR3 - 0.185502 * xR4 + 0.627302 * xR5 + 0.627302 * xR6 - 0.185502 * xR7 + 0.086227 * xR8 - 0.039987 * xR9 + 0.015275 * xR10 - 0.003314 * xR11;\n    iR3 = -0.003795 * xR0 + 0.014175 * xR1 - 0.034630 * xR2 + 0.073268 * xR3 - 0.164139 * xR4 + 0.897104 * xR5 + 0.290377 * xR6 - 0.106961 * xR7 + 0.050721 * xR8 - 0.022830 * xR9 + 0.007982 * xR10 - 0.001272 * xR11;\n    pk = max(max(max(abs(xL6), abs(xL5)), max(abs(xR6), abs(xR5))), max(max(max(abs(iL1), abs(iL2)), abs(iL3)), max(max(abs(iR1), abs(iR2)), abs(iR3))));\n}\ngq = (pk > cl) ? cl / pk : 1;\n\n// HOLD the lowest gain of the last n + 1 samples: a queue of rising values, oldest first.\n// Each entry: the gain and the sample counter when it arrived\n// the sample counter wraps at 2^20 so it stays exact in Data, which stores 32-bit floats\nt = t + 1;\nif (t >= 1048576) {\n    t = t - 1048576;\n}\nbk = qh + qc - 1;\nif (bk >= 4096) {\n    bk = bk - 4096;\n}\nif (bk < 0) {\n    bk = bk + 4096;\n}\nwhile (qc > 0 && peek(dq, bk, 0) >= gq) {\n    qc = qc - 1;\n    bk = bk - 1;\n    if (bk < 0) {\n        bk = bk + 4096;\n    }\n}\nbi = qh + qc;\nif (bi >= 4096) {\n    bi = bi - 4096;\n}\npoke(dq, gq, bi, 0);\npoke(dq, t, bi, 1);\nqc = qc + 1;\n// drop values older than n samples; the newest always stays, so this loop always ends\npt = peek(dq, qh, 1);\nage = t - pt;\nif (age < 0) {\n    age = age + 1048576;\n}\nwhile (qc > 1 && age > n) {\n    qh = qh + 1;\n    if (qh >= 4096) {\n        qh = 0;\n    }\n    qc = qc - 1;\n    pt = peek(dq, qh, 1);\n    age = t - pt;\n    if (age < 0) {\n        age = age + 1048576;\n    }\n}\nheld = peek(dq, qh, 0);\n\n// RELEASE: drops at once, recovers at the Release speed\ny = (held < y) ? held : y + (held - y) * kr;\n\n// SMOOTH: average over the lookahead, so the gain ramps down before the peak arrives\ng = y;\nj = 0;\nif (rs > 0) {\n    sm = y;\n    for (j = 1; j < n; j = j + 1) {\n        sm = sm + yd.read(j);\n    }\n} else if (n > 0) {\n    sm = sm + y - yd.read(n);\n}\nif (n > 0) {\n    g = sm / n;\n}\nyd.write(y);\n\n// the audio, late by the lookahead, + 6 samples with true peak\nlat = n + tp * 6;\nxL = dL;\nxR = dR;\nyL = in1;\nyR = in2;\nif (lat > 0) {\n    xL = aL.read(lat);\n    xR = aR.read(lat);\n    yL = rL.read(lat);\n    yR = rR.read(lat);\n}\naL.write(dL);\naR.write(dR);\nrL.write(in1);\nrR.write(in2);\n\n// write state last\nstarted = st;\ncurN = n;\ncurT = tp;\ndipR = dr;\ndipS = ds;\nholdC = hc;\nyS = y;\nsumS = sm;\nqHead = qh;\nqCnt = qc;\ntick = t;\nceilS = cl;\ndriveS = dv;\nonS = en;\n\n// apply the gain; the clip only catches rounding dust. Off: the delayed input, untouched and without drive\nlL = clip(xL * g, -cl, cl);\nlR = clip(xR * g, -cl, cl);\nout1 = mix(yL, lL, en) * dipG;\nout2 = mix(yR, lR, en) * dipG;\n// gain reduction as a positive number, like br.comp: 0 = none, 6 = turned down 6 dB.\n// While the output is silent for a load or latency change the gain is still refilling: report 0, not a false reading\ngr = (ds == 2) ? 1 : g;\nout3 = -atodb(max(mix(1, gr, en), 0.00001));\n"
+                                                        "code": "// br.limit.1.2 -- stereo safety brickwall limiter\n// Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/\n// MUST MATCH: the core, the UI by reference and the RNBO host embed this same code\n// in1/in2 audio L/R\n// in3 drive dB 0..24: pushes the input into the limiter; louder, the ceiling still holds\n// in4 ceiling dBFS -30..0: the output never goes above it\n// in5 release ms 1..1000: how fast the level comes back after a peak\n// in6 lookahead ms 0..5: 0 = no latency, the gain drops on the peak itself, which can sound harsh on hard hits;\n//     above 0 the gain starts dropping that much early, cleaner, and the audio is late by the same amount\n// in7 true peak 0/1: also catches peaks that fall between samples with a 4x oversampled check, adds 6 samples latency\n// in8 on/off 1 on, 0 off: off = the input passes untouched, no drive, still delayed by the latency so nothing jumps\n// out1/out2 audio L/R, out3 gain reduction dB, positive: 0 = none, 6 = turned down 6 dB\n//\n// How the ceiling is guaranteed: for every sample the limiter works out the gain that would put it exactly\n// on the ceiling. The louder side sets it for both, so the stereo image never moves. It holds the lowest\n// gain seen over the lookahead, lets it recover at the Release speed, then averages it over the lookahead.\n// That average can only be at or below the gain each delayed sample needs, so nothing gets through, and the\n// gain ramps down smoothly over the lookahead instead of jumping. With lookahead 0 the gain jumps.\n// A final clip at the ceiling only catches rounding dust.\n//\n// Changing Lookahead or True Peak changes the latency, which would make the audio jump. Instead the output\n// fades out over 5 ms, switches while silent, waits until the limiter has refilled, and fades back in.\n// Set them before you play. Changes that arrive during a fade are taken at the next one.\n\n// lookahead up to 4000 samples, 5 ms at 768 kHz, + 6 for true peak\nDelay aL(4100);\nDelay aR(4100);\n// the input without drive, for Off\nDelay rL(4100);\nDelay rR(4100);\nDelay yd(4100);\n// lowest-gain queue: value, sample number\nData dq(4096, 2);\nHistory started(0);\nHistory curN(0);\nHistory curT(0);\nHistory dipR(0);\nHistory dipS(0);\nHistory holdC(0);\nHistory yS(1);\nHistory sumS(0);\nHistory qHead(0);\nHistory qCnt(0);\nHistory tick(0);\nHistory ceilS(0.966051);\nHistory driveS(1);\nHistory onS(1);\n\n// read all state first\nst = started;\nn = curN;\ntp = curT;\ndr = dipR;\nds = dipS;\nhc = holdC;\nrs = 0;\ny = yS;\nsm = sumS;\nqh = qHead;\nqc = qCnt;\nt = tick;\ncl = ceilS;\ndv = driveS;\nen = onS;\n\n// drive, ceiling and on/off glide over 20 ms so nothing clicks\nk = 1 - exp(-1 / mstosamps(20));\ndv = dv + (dbtoa(clip(in3, 0, 24)) - dv) * k;\ncl = cl + (dbtoa(clip(in4, -30, 0)) - cl) * k;\nen = en + (clip(floor(in8 + 0.5), 0, 1) - en) * k;\nkr = 1 - exp(-1 / max(1, mstosamps(clip(in5, 1, 1000))));\nnT = clip(floor(mstosamps(clip(in6, 0, 5)) + 0.5), 0, 4000);\ntpT = clip(floor(in7 + 0.5), 0, 1);\n\n// DRIVE: everything below works on the driven input\ndL = in1 * dv;\ndR = in2 * dv;\n\n// at load: start silent on the settings, fill up, then fade in over 5 ms\nif (st == 0) {\n    n = nT;\n    tp = tpT;\n    dr = 1;\n    ds = 2;\n    hc = 2 * n + 8;\n    rs = 1;\n    st = 1;\n}\n\n// LATENCY CHANGE: fade out, switch while silent, hold until refilled, fade in\ndinc = 1 / mstosamps(5);\nif (ds == 0) {\n    if (nT != n || tpT != tp) {\n        ds = 1;\n    }\n}\nif (ds == 1) {\n    dr = dr + dinc;\n    if (dr >= 1) {\n        dr = 1;\n        ds = 2;\n        n = nT;\n        tp = tpT;\n        hc = 2 * n + 8;\n        rs = 1;\n    }\n} else if (ds == 2) {\n    hc = hc - 1;\n    if (hc <= 0) {\n        ds = 3;\n    }\n} else if (ds == 3) {\n    dr = dr - dinc;\n    if (dr <= 0) {\n        dr = 0;\n        ds = 0;\n    }\n}\ndipG = 0.5 + 0.5 * cos(pi * dr);\n\n// DETECT: the louder side, sample peaks or true peaks\npk = max(abs(dL), abs(dR));\nxL0 = 0;\nxL1 = 0;\nxL2 = 0;\nxL3 = 0;\nxL4 = 0;\nxL5 = 0;\nxL6 = 0;\nxL7 = 0;\nxL8 = 0;\nxL9 = 0;\nxL10 = 0;\nxL11 = 0;\nxR0 = 0;\nxR1 = 0;\nxR2 = 0;\nxR3 = 0;\nxR4 = 0;\nxR5 = 0;\nxR6 = 0;\nxR7 = 0;\nxR8 = 0;\nxR9 = 0;\nxR10 = 0;\nxR11 = 0;\niL1 = 0;\niL2 = 0;\niL3 = 0;\niR1 = 0;\niR2 = 0;\niR3 = 0;\nif (tp > 0) {\n    xL0 = dL;\n    xL1 = aL.read(1);\n    xL2 = aL.read(2);\n    xL3 = aL.read(3);\n    xL4 = aL.read(4);\n    xL5 = aL.read(5);\n    xL6 = aL.read(6);\n    xL7 = aL.read(7);\n    xL8 = aL.read(8);\n    xL9 = aL.read(9);\n    xL10 = aL.read(10);\n    xL11 = aL.read(11);\n    xR0 = dR;\n    xR1 = aR.read(1);\n    xR2 = aR.read(2);\n    xR3 = aR.read(3);\n    xR4 = aR.read(4);\n    xR5 = aR.read(5);\n    xR6 = aR.read(6);\n    xR7 = aR.read(7);\n    xR8 = aR.read(8);\n    xR9 = aR.read(9);\n    xR10 = aR.read(10);\n    xR11 = aR.read(11);\n    iL1 = -0.001272 * xL0 + 0.007982 * xL1 - 0.022830 * xL2 + 0.050721 * xL3 - 0.106961 * xL4 + 0.290377 * xL5 + 0.897104 * xL6 - 0.164139 * xL7 + 0.073268 * xL8 - 0.034630 * xL9 + 0.014175 * xL10 - 0.003795 * xL11;\n    iL2 = -0.003314 * xL0 + 0.015275 * xL1 - 0.039987 * xL2 + 0.086227 * xL3 - 0.185502 * xL4 + 0.627302 * xL5 + 0.627302 * xL6 - 0.185502 * xL7 + 0.086227 * xL8 - 0.039987 * xL9 + 0.015275 * xL10 - 0.003314 * xL11;\n    iL3 = -0.003795 * xL0 + 0.014175 * xL1 - 0.034630 * xL2 + 0.073268 * xL3 - 0.164139 * xL4 + 0.897104 * xL5 + 0.290377 * xL6 - 0.106961 * xL7 + 0.050721 * xL8 - 0.022830 * xL9 + 0.007982 * xL10 - 0.001272 * xL11;\n    iR1 = -0.001272 * xR0 + 0.007982 * xR1 - 0.022830 * xR2 + 0.050721 * xR3 - 0.106961 * xR4 + 0.290377 * xR5 + 0.897104 * xR6 - 0.164139 * xR7 + 0.073268 * xR8 - 0.034630 * xR9 + 0.014175 * xR10 - 0.003795 * xR11;\n    iR2 = -0.003314 * xR0 + 0.015275 * xR1 - 0.039987 * xR2 + 0.086227 * xR3 - 0.185502 * xR4 + 0.627302 * xR5 + 0.627302 * xR6 - 0.185502 * xR7 + 0.086227 * xR8 - 0.039987 * xR9 + 0.015275 * xR10 - 0.003314 * xR11;\n    iR3 = -0.003795 * xR0 + 0.014175 * xR1 - 0.034630 * xR2 + 0.073268 * xR3 - 0.164139 * xR4 + 0.897104 * xR5 + 0.290377 * xR6 - 0.106961 * xR7 + 0.050721 * xR8 - 0.022830 * xR9 + 0.007982 * xR10 - 0.001272 * xR11;\n    pk = max(max(max(abs(xL6), abs(xL5)), max(abs(xR6), abs(xR5))), max(max(max(abs(iL1), abs(iL2)), abs(iL3)), max(max(abs(iR1), abs(iR2)), abs(iR3))));\n}\ngq = (pk > cl) ? cl / pk : 1;\n\n// HOLD the lowest gain of the last n + 1 samples: a queue of rising values, oldest first.\n// Each entry: the gain and the sample counter when it arrived\n// the sample counter wraps at 2^20 so it stays exact in Data, which stores 32-bit floats\nt = t + 1;\nif (t >= 1048576) {\n    t = t - 1048576;\n}\nbk = qh + qc - 1;\nif (bk >= 4096) {\n    bk = bk - 4096;\n}\nif (bk < 0) {\n    bk = bk + 4096;\n}\nwhile (qc > 0 && peek(dq, bk, 0) >= gq) {\n    qc = qc - 1;\n    bk = bk - 1;\n    if (bk < 0) {\n        bk = bk + 4096;\n    }\n}\nbi = qh + qc;\nif (bi >= 4096) {\n    bi = bi - 4096;\n}\npoke(dq, gq, bi, 0);\npoke(dq, t, bi, 1);\nqc = qc + 1;\n// drop values older than n samples; the newest always stays, so this loop always ends\npt = peek(dq, qh, 1);\nage = t - pt;\nif (age < 0) {\n    age = age + 1048576;\n}\nwhile (qc > 1 && age > n) {\n    qh = qh + 1;\n    if (qh >= 4096) {\n        qh = 0;\n    }\n    qc = qc - 1;\n    pt = peek(dq, qh, 1);\n    age = t - pt;\n    if (age < 0) {\n        age = age + 1048576;\n    }\n}\nheld = peek(dq, qh, 0);\n\n// RELEASE: drops at once, recovers at the Release speed\ny = (held < y) ? held : y + (held - y) * kr;\n\n// SMOOTH: average over the lookahead, so the gain ramps down before the peak arrives\ng = y;\nj = 0;\nif (rs > 0) {\n    sm = y;\n    for (j = 1; j < n; j = j + 1) {\n        sm = sm + yd.read(j);\n    }\n} else if (n > 0) {\n    sm = sm + y - yd.read(n);\n}\nif (n > 0) {\n    g = sm / n;\n}\nyd.write(y);\n\n// the audio, late by the lookahead, + 6 samples with true peak\nlat = n + tp * 6;\nxL = dL;\nxR = dR;\nyL = in1;\nyR = in2;\nif (lat > 0) {\n    xL = aL.read(lat);\n    xR = aR.read(lat);\n    yL = rL.read(lat);\n    yR = rR.read(lat);\n}\naL.write(dL);\naR.write(dR);\nrL.write(in1);\nrR.write(in2);\n\n// write state last\nstarted = st;\ncurN = n;\ncurT = tp;\ndipR = dr;\ndipS = ds;\nholdC = hc;\nyS = y;\nsumS = sm;\nqHead = qh;\nqCnt = qc;\ntick = t;\nceilS = cl;\ndriveS = dv;\nonS = en;\n\n// apply the gain; the clip only catches rounding dust. Off: the delayed input, untouched and without drive\nlL = clip(xL * g, -cl, cl);\nlR = clip(xR * g, -cl, cl);\nout1 = mix(yL, lL, en) * dipG;\nout2 = mix(yR, lR, en) * dipG;\n// gain reduction as a positive number, like br.comp: 0 = none, 6 = turned down 6 dB.\n// While the output is silent for a load or latency change the gain is still refilling: report 0, not a false reading\ngr = (ds == 2) ? 1 : g;\nout3 = -atodb(max(mix(1, gr, en), 0.00001));\n"
                                                     }
                                                 },
                                                 {
@@ -1256,7 +1256,7 @@
                                         600.0,
                                         50.0
                                     ],
-                                    "text": "gen~ code MUST MATCH br.limit.1.1 (open both: same codebox). The six params are the plugin parameters (VST/AU, web, external). Each inlet sets its param; attrui in the parent shows them all. Outlet 3 = gain reduction dB."
+                                    "text": "gen~ code MUST MATCH br.limit.1.2 (open both: same codebox). The six params are the plugin parameters (VST/AU, web, external). Each inlet sets its param; attrui in the parent shows them all. Outlet 3 = gain reduction dB."
                                 }
                             },
                             {
@@ -4510,231 +4510,6 @@
                                     },
                                     "text": "out~ 3"
                                 }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-st10",
-                                    "maxclass": "newobj",
-                                    "text": "change",
-                                    "numinlets": 1,
-                                    "numoutlets": 3,
-                                    "outlettype": [
-                                        "",
-                                        "",
-                                        ""
-                                    ],
-                                    "patching_rect": [
-                                        323.0,
-                                        325.0,
-                                        50.0,
-                                        23.0
-                                    ]
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-st20",
-                                    "maxclass": "newobj",
-                                    "text": "outport drive",
-                                    "numinlets": 1,
-                                    "numoutlets": 0,
-                                    "patching_rect": [
-                                        323.0,
-                                        360.0,
-                                        90.0,
-                                        23.0
-                                    ]
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-st11",
-                                    "maxclass": "newobj",
-                                    "text": "change",
-                                    "numinlets": 1,
-                                    "numoutlets": 3,
-                                    "outlettype": [
-                                        "",
-                                        "",
-                                        ""
-                                    ],
-                                    "patching_rect": [
-                                        540.0,
-                                        325.0,
-                                        50.0,
-                                        23.0
-                                    ]
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-st21",
-                                    "maxclass": "newobj",
-                                    "text": "outport ceiling",
-                                    "numinlets": 1,
-                                    "numoutlets": 0,
-                                    "patching_rect": [
-                                        540.0,
-                                        360.0,
-                                        90.0,
-                                        23.0
-                                    ]
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-st12",
-                                    "maxclass": "newobj",
-                                    "text": "change",
-                                    "numinlets": 1,
-                                    "numoutlets": 3,
-                                    "outlettype": [
-                                        "",
-                                        "",
-                                        ""
-                                    ],
-                                    "patching_rect": [
-                                        728.0,
-                                        325.0,
-                                        50.0,
-                                        23.0
-                                    ]
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-st22",
-                                    "maxclass": "newobj",
-                                    "text": "outport release",
-                                    "numinlets": 1,
-                                    "numoutlets": 0,
-                                    "patching_rect": [
-                                        728.0,
-                                        360.0,
-                                        90.0,
-                                        23.0
-                                    ]
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-st13",
-                                    "maxclass": "newobj",
-                                    "text": "change",
-                                    "numinlets": 1,
-                                    "numoutlets": 3,
-                                    "outlettype": [
-                                        "",
-                                        "",
-                                        ""
-                                    ],
-                                    "patching_rect": [
-                                        930.0,
-                                        343.0,
-                                        50.0,
-                                        23.0
-                                    ]
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-st23",
-                                    "maxclass": "newobj",
-                                    "text": "outport lookahead",
-                                    "numinlets": 1,
-                                    "numoutlets": 0,
-                                    "patching_rect": [
-                                        930.0,
-                                        378.0,
-                                        90.0,
-                                        23.0
-                                    ]
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-st14",
-                                    "maxclass": "newobj",
-                                    "text": "change",
-                                    "numinlets": 1,
-                                    "numoutlets": 3,
-                                    "outlettype": [
-                                        "",
-                                        "",
-                                        ""
-                                    ],
-                                    "patching_rect": [
-                                        1248.0,
-                                        320.0,
-                                        50.0,
-                                        23.0
-                                    ]
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-st24",
-                                    "maxclass": "newobj",
-                                    "text": "outport truepeak",
-                                    "numinlets": 1,
-                                    "numoutlets": 0,
-                                    "patching_rect": [
-                                        1248.0,
-                                        355.0,
-                                        90.0,
-                                        23.0
-                                    ]
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-st15",
-                                    "maxclass": "newobj",
-                                    "text": "change",
-                                    "numinlets": 1,
-                                    "numoutlets": 3,
-                                    "outlettype": [
-                                        "",
-                                        "",
-                                        ""
-                                    ],
-                                    "patching_rect": [
-                                        1503.0,
-                                        320.0,
-                                        50.0,
-                                        23.0
-                                    ]
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-st25",
-                                    "maxclass": "newobj",
-                                    "text": "outport on",
-                                    "numinlets": 1,
-                                    "numoutlets": 0,
-                                    "patching_rect": [
-                                        1503.0,
-                                        355.0,
-                                        90.0,
-                                        23.0
-                                    ]
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-st3",
-                                    "maxclass": "comment",
-                                    "numinlets": 1,
-                                    "numoutlets": 0,
-                                    "text": "State: each outport sends drive <dB>, ceiling <dBFS>, release <ms>, lookahead <ms>, truepeak 0/1 and on 0/1 out of the rnbo~ rightmost outlet the moment it changes. Same as the State outlet of the abstractions.",
-                                    "patching_rect": [
-                                        42.0,
-                                        416.0,
-                                        520.0,
-                                        33.0
-                                    ]
-                                }
                             }
                         ],
                         "lines": [
@@ -4941,150 +4716,6 @@
                                         0
                                     ]
                                 }
-                            },
-                            {
-                                "patchline": {
-                                    "source": [
-                                        "pDrive",
-                                        0
-                                    ],
-                                    "destination": [
-                                        "obj-st10",
-                                        0
-                                    ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "source": [
-                                        "obj-st10",
-                                        0
-                                    ],
-                                    "destination": [
-                                        "obj-st20",
-                                        0
-                                    ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "source": [
-                                        "pCeiling",
-                                        0
-                                    ],
-                                    "destination": [
-                                        "obj-st11",
-                                        0
-                                    ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "source": [
-                                        "obj-st11",
-                                        0
-                                    ],
-                                    "destination": [
-                                        "obj-st21",
-                                        0
-                                    ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "source": [
-                                        "pRelease",
-                                        0
-                                    ],
-                                    "destination": [
-                                        "obj-st12",
-                                        0
-                                    ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "source": [
-                                        "obj-st12",
-                                        0
-                                    ],
-                                    "destination": [
-                                        "obj-st22",
-                                        0
-                                    ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "source": [
-                                        "pLookahead",
-                                        0
-                                    ],
-                                    "destination": [
-                                        "obj-st13",
-                                        0
-                                    ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "source": [
-                                        "obj-st13",
-                                        0
-                                    ],
-                                    "destination": [
-                                        "obj-st23",
-                                        0
-                                    ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "source": [
-                                        "pTrue_Peak",
-                                        0
-                                    ],
-                                    "destination": [
-                                        "obj-st14",
-                                        0
-                                    ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "source": [
-                                        "obj-st14",
-                                        0
-                                    ],
-                                    "destination": [
-                                        "obj-st24",
-                                        0
-                                    ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "source": [
-                                        "pOn_Off",
-                                        0
-                                    ],
-                                    "destination": [
-                                        "obj-st15",
-                                        0
-                                    ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "source": [
-                                        "obj-st15",
-                                        0
-                                    ],
-                                    "destination": [
-                                        "obj-st25",
-                                        0
-                                    ]
-                                }
                             }
                         ]
                     },
@@ -5234,7 +4865,7 @@
                         340.0,
                         60.0
                     ],
-                    "text": "EXPORT NAME: br.limit.1.1~\nMax External Export asks for a name: keep the ~ at the end. Latency = Lookahead (+ 6 samples with True Peak); a DAW plugin may need its latency set by hand."
+                    "text": "EXPORT NAME: br.limit.1.2~\nMax External Export asks for a name: keep the ~ at the end. Latency = Lookahead (+ 6 samples with True Peak); a DAW plugin may need its latency set by hand."
                 }
             },
             {
@@ -5421,159 +5052,6 @@
                     ],
                     "text": "gain reduction dB"
                 }
-            },
-            {
-                "box": {
-                    "id": "obj-st4",
-                    "maxclass": "comment",
-                    "numinlets": 1,
-                    "numoutlets": 0,
-                    "text": "rnbo~ rightmost outlet = State: drive <dB>, ceiling <dBFS>, release <ms>, lookahead <ms>, truepeak 0/1 and on 0/1 (from the outports inside).",
-                    "patching_rect": [
-                        420,
-                        372,
-                        443.0,
-                        20.0
-                    ]
-                }
-            },
-            {
-                "box": {
-                    "id": "obj-st5",
-                    "maxclass": "newobj",
-                    "text": "route drive ceiling release lookahead truepeak on",
-                    "numinlets": 2,
-                    "numoutlets": 7,
-                    "outlettype": [
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        ""
-                    ],
-                    "patching_rect": [
-                        420,
-                        520,
-                        310.0,
-                        22.0
-                    ]
-                }
-            },
-            {
-                "box": {
-                    "id": "obj-st60",
-                    "maxclass": "flonum",
-                    "numinlets": 1,
-                    "numoutlets": 2,
-                    "outlettype": [
-                        "",
-                        "bang"
-                    ],
-                    "parameter_enable": 0,
-                    "patching_rect": [
-                        420,
-                        555,
-                        50.0,
-                        22.0
-                    ]
-                }
-            },
-            {
-                "box": {
-                    "id": "obj-st61",
-                    "maxclass": "flonum",
-                    "numinlets": 1,
-                    "numoutlets": 2,
-                    "outlettype": [
-                        "",
-                        "bang"
-                    ],
-                    "parameter_enable": 0,
-                    "patching_rect": [
-                        475,
-                        555,
-                        50.0,
-                        22.0
-                    ]
-                }
-            },
-            {
-                "box": {
-                    "id": "obj-st62",
-                    "maxclass": "flonum",
-                    "numinlets": 1,
-                    "numoutlets": 2,
-                    "outlettype": [
-                        "",
-                        "bang"
-                    ],
-                    "parameter_enable": 0,
-                    "patching_rect": [
-                        530,
-                        555,
-                        50.0,
-                        22.0
-                    ]
-                }
-            },
-            {
-                "box": {
-                    "id": "obj-st63",
-                    "maxclass": "flonum",
-                    "numinlets": 1,
-                    "numoutlets": 2,
-                    "outlettype": [
-                        "",
-                        "bang"
-                    ],
-                    "parameter_enable": 0,
-                    "patching_rect": [
-                        585,
-                        555,
-                        50.0,
-                        22.0
-                    ]
-                }
-            },
-            {
-                "box": {
-                    "id": "obj-st64",
-                    "maxclass": "number",
-                    "numinlets": 1,
-                    "numoutlets": 2,
-                    "outlettype": [
-                        "",
-                        "bang"
-                    ],
-                    "parameter_enable": 0,
-                    "patching_rect": [
-                        640,
-                        555,
-                        50.0,
-                        22.0
-                    ]
-                }
-            },
-            {
-                "box": {
-                    "id": "obj-st65",
-                    "maxclass": "number",
-                    "numinlets": 1,
-                    "numoutlets": 2,
-                    "outlettype": [
-                        "",
-                        "bang"
-                    ],
-                    "parameter_enable": 0,
-                    "patching_rect": [
-                        695,
-                        555,
-                        50.0,
-                        22.0
-                    ]
-                }
             }
         ],
         "lines": [
@@ -5741,90 +5219,6 @@
                     ],
                     "source": [
                         "obj-grsnap",
-                        0
-                    ]
-                }
-            },
-            {
-                "patchline": {
-                    "source": [
-                        "obj-7",
-                        3
-                    ],
-                    "destination": [
-                        "obj-st5",
-                        0
-                    ]
-                }
-            },
-            {
-                "patchline": {
-                    "source": [
-                        "obj-st5",
-                        0
-                    ],
-                    "destination": [
-                        "obj-st60",
-                        0
-                    ]
-                }
-            },
-            {
-                "patchline": {
-                    "source": [
-                        "obj-st5",
-                        1
-                    ],
-                    "destination": [
-                        "obj-st61",
-                        0
-                    ]
-                }
-            },
-            {
-                "patchline": {
-                    "source": [
-                        "obj-st5",
-                        2
-                    ],
-                    "destination": [
-                        "obj-st62",
-                        0
-                    ]
-                }
-            },
-            {
-                "patchline": {
-                    "source": [
-                        "obj-st5",
-                        3
-                    ],
-                    "destination": [
-                        "obj-st63",
-                        0
-                    ]
-                }
-            },
-            {
-                "patchline": {
-                    "source": [
-                        "obj-st5",
-                        4
-                    ],
-                    "destination": [
-                        "obj-st64",
-                        0
-                    ]
-                }
-            },
-            {
-                "patchline": {
-                    "source": [
-                        "obj-st5",
-                        5
-                    ],
-                    "destination": [
-                        "obj-st65",
                         0
                     ]
                 }

@@ -9,8 +9,8 @@
             "modernui": 1
         },
         "classnamespace": "box",
-        "rect": [ 85.0, 104.0, 793.0, 682.0 ],
-        "description": "_br.limit.example.1.1 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
+        "rect": [ 85.0, 104.0, 1520.0, 757.0 ],
+        "description": "_br.limit.example.1.2 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
         "showontab": 1,
         "boxes": [
             {
@@ -1029,7 +1029,7 @@
                             }
                         ]
                     },
-                    "patching_rect": [ 802.0, 98.0, 120.0, 22.0 ],
+                    "patching_rect": [ 729.0, 104.0, 120.0, 22.0 ],
                     "text": "p source"
                 }
             },
@@ -1043,7 +1043,7 @@
                     "numinlets": 1,
                     "numoutlets": 0,
                     "patching_rect": [ 630.0, 15.0, 463.0, 33.0 ],
-                    "text": "_br.limit.example.1.1 -- Created by Brian Riordan, guaguanco127@gmail.com\nhttps://github.com/guaguanco127/"
+                    "text": "_br.limit.example.1.2 -- Created by Brian Riordan, guaguanco127@gmail.com\nhttps://github.com/guaguanco127/"
                 }
             },
             {
@@ -1081,7 +1081,7 @@
                     "numinlets": 1,
                     "numoutlets": 0,
                     "patching_rect": [ 15.0, 118.0, 692.0, 60.0 ],
-                    "text": "Four files, same DSP inside:\nbr.limit.1.1 = stereo core, no UI (in: L, R, Drive, Ceiling, Release, Lookahead ms, True Peak, On/Off; out: L, R, gain reduction dB).\nbr.limit.ui.1.1 = the same with controls and a GR meter. br.limit.mono.1.1 and br.limit.mono.ui.1.1 = mono."
+                    "text": "Four files, same DSP inside:\nbr.limit.1.2 = stereo core, no UI (in: L, R, Drive, Ceiling, Release, Lookahead ms, True Peak, On/Off; out: L, R, gain reduction dB).\nbr.limit.ui.1.2 = the same with controls and a GR meter. br.limit.mono.1.2 and br.limit.mono.ui.1.2 = mono."
                 }
             },
             {
@@ -1154,8 +1154,8 @@
                     "maxclass": "comment",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 905.0, 143.0, 145.0, 20.0 ],
-                    "text": "A: br.limit.ui.1.1"
+                    "patching_rect": [ 832.0, 149.0, 145.0, 20.0 ],
+                    "text": "A: br.limit.ui.1.2"
                 }
             },
             {
@@ -1169,12 +1169,12 @@
                     "lockeddragscroll": 0,
                     "lockedsize": 0,
                     "maxclass": "bpatcher",
-                    "name": "br.limit.ui.1.1.maxpat",
+                    "name": "br.limit.ui.1.2.maxpat",
                     "numinlets": 8,
                     "numoutlets": 4,
                     "offset": [ 0.0, 0.0 ],
                     "outlettype": [ "signal", "signal", "signal", "" ],
-                    "patching_rect": [ 802.0, 168.0, 133.0, 162.0 ],
+                    "patching_rect": [ 729.0, 174.0, 133.0, 162.0 ],
                     "viewvisibility": 1
                 }
             },
@@ -1186,7 +1186,7 @@
                     "maxclass": "comment",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 1052.0, 138.0, 260.0, 20.0 ],
+                    "patching_rect": [ 979.0, 144.0, 260.0, 20.0 ],
                     "text": "B: mono core, no latency, pushed hard"
                 }
             },
@@ -1197,10 +1197,10 @@
                     "id": "obj-b",
                     "maxclass": "newobj",
                     "numinlets": 7,
-                    "numoutlets": 3,
-                    "outlettype": [ "signal", "signal", "" ],
-                    "patching_rect": [ 1052.0, 343.0, 300.0, 22.0 ],
-                    "text": "br.limit.mono.1.1"
+                    "numoutlets": 2,
+                    "outlettype": [ "signal", "signal" ],
+                    "patching_rect": [ 979.0, 349.0, 300.0, 22.0 ],
+                    "text": "br.limit.mono.1.2"
                 }
             },
             {
@@ -1211,7 +1211,7 @@
                     "maxclass": "comment",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 1357.0, 343.0, 40.0, 20.0 ],
+                    "patching_rect": [ 1284.0, 349.0, 40.0, 20.0 ],
                     "text": "core"
                 }
             },
@@ -1224,7 +1224,7 @@
                     "numoutlets": 5,
                     "outlettype": [ "signal", "signal", "", "float", "list" ],
                     "parameter_enable": 1,
-                    "patching_rect": [ 802.0, 393.0, 48.0, 136.0 ],
+                    "patching_rect": [ 729.0, 399.0, 48.0, 136.0 ],
                     "saved_attribute_attributes": {
                         "valueof": {
                             "parameter_initial": [ -70.0 ],
@@ -1250,7 +1250,7 @@
                     "numoutlets": 5,
                     "outlettype": [ "signal", "signal", "", "float", "list" ],
                     "parameter_enable": 1,
-                    "patching_rect": [ 1052.0, 393.0, 48.0, 136.0 ],
+                    "patching_rect": [ 979.0, 399.0, 48.0, 136.0 ],
                     "saved_attribute_attributes": {
                         "valueof": {
                             "parameter_initial": [ -70.0 ],
@@ -1275,7 +1275,7 @@
                     "numoutlets": 1,
                     "outlettype": [ "int" ],
                     "parameter_enable": 0,
-                    "patching_rect": [ 872.0, 393.0, 24.0, 24.0 ]
+                    "patching_rect": [ 799.0, 399.0, 24.0, 24.0 ]
                 }
             },
             {
@@ -1286,7 +1286,7 @@
                     "maxclass": "comment",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 902.0, 393.0, 75.0, 20.0 ],
+                    "patching_rect": [ 829.0, 399.0, 75.0, 20.0 ],
                     "text": "audio on/off"
                 }
             },
@@ -1298,7 +1298,7 @@
                     "maxclass": "newobj",
                     "numinlets": 2,
                     "numoutlets": 0,
-                    "patching_rect": [ 802.0, 553.0, 72.0, 22.0 ],
+                    "patching_rect": [ 729.0, 559.0, 72.0, 22.0 ],
                     "text": "dac~ 1 2"
                 }
             },
@@ -1313,7 +1313,7 @@
                     "numoutlets": 3,
                     "outlettype": [ "int", "", "" ],
                     "parameter_enable": 0,
-                    "patching_rect": [ 802.0, 68.0, 150.0, 22.0 ]
+                    "patching_rect": [ 729.0, 74.0, 150.0, 22.0 ]
                 }
             },
             {
@@ -1324,7 +1324,7 @@
                     "maxclass": "comment",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 957.0, 68.0, 200.0, 20.0 ],
+                    "patching_rect": [ 884.0, 74.0, 200.0, 20.0 ],
                     "text": "source: Off until you pick one"
                 }
             },
@@ -1337,7 +1337,7 @@
                     "numinlets": 1,
                     "numoutlets": 1,
                     "outlettype": [ "" ],
-                    "patching_rect": [ 1092.0, 193.0, 80.0, 22.0 ],
+                    "patching_rect": [ 1019.0, 199.0, 80.0, 22.0 ],
                     "text": "loadmess 18"
                 }
             },
@@ -1349,7 +1349,7 @@
                     "maxclass": "comment",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 1177.0, 193.0, 100.0, 20.0 ],
+                    "patching_rect": [ 1104.0, 199.0, 100.0, 20.0 ],
                     "text": "Drive +18 dB"
                 }
             },
@@ -1362,7 +1362,7 @@
                     "numinlets": 1,
                     "numoutlets": 1,
                     "outlettype": [ "" ],
-                    "patching_rect": [ 1132.0, 233.0, 80.0, 22.0 ],
+                    "patching_rect": [ 1059.0, 239.0, 80.0, 22.0 ],
                     "text": "loadmess -6"
                 }
             },
@@ -1374,7 +1374,7 @@
                     "maxclass": "comment",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 1217.0, 233.0, 110.0, 20.0 ],
+                    "patching_rect": [ 1144.0, 239.0, 110.0, 20.0 ],
                     "text": "Ceiling -6 dBFS"
                 }
             },
@@ -1387,7 +1387,7 @@
                     "numinlets": 1,
                     "numoutlets": 1,
                     "outlettype": [ "" ],
-                    "patching_rect": [ 1212.0, 273.0, 75.0, 22.0 ],
+                    "patching_rect": [ 1139.0, 279.0, 75.0, 22.0 ],
                     "text": "loadmess 0"
                 }
             },
@@ -1399,7 +1399,7 @@
                     "maxclass": "comment",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 1292.0, 273.0, 180.0, 20.0 ],
+                    "patching_rect": [ 1219.0, 279.0, 180.0, 20.0 ],
                     "text": "Lookahead 0 ms = no latency"
                 }
             },
@@ -1412,7 +1412,7 @@
                     "numinlets": 2,
                     "numoutlets": 1,
                     "outlettype": [ "float" ],
-                    "patching_rect": [ 1302.0, 393.0, 90.0, 22.0 ],
+                    "patching_rect": [ 1229.0, 399.0, 90.0, 22.0 ],
                     "text": "snapshot~ 100"
                 }
             },
@@ -1427,7 +1427,7 @@
                     "numoutlets": 2,
                     "outlettype": [ "", "bang" ],
                     "parameter_enable": 0,
-                    "patching_rect": [ 1302.0, 418.0, 60.0, 22.0 ]
+                    "patching_rect": [ 1229.0, 424.0, 60.0, 22.0 ]
                 }
             },
             {
@@ -1438,7 +1438,7 @@
                     "maxclass": "comment",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 1367.0, 418.0, 130.0, 20.0 ],
+                    "patching_rect": [ 1294.0, 424.0, 130.0, 20.0 ],
                     "text": "B gain reduction dB"
                 }
             },
@@ -1452,7 +1452,7 @@
                     "numinlets": 1,
                     "numoutlets": 0,
                     "patching_rect": [ 15.0, 370.0, 560.0, 60.0 ],
-                    "text": "State outlet: every UI and core has a last outlet that sends drive <dB>, ceiling <dBFS>, release <ms>, lookahead <ms>, truepeak 0/1 and on 0/1 the moment a control changes (numbers only, not signals). Open [p State outlet] (also a tab at the top) to see it read by name with [route drive ceiling release lookahead truepeak on]."
+                    "text": "State outlet: each UI has a last outlet that sends drive <dB>, ceiling <dBFS>, release <ms>, lookahead <ms>, truepeak 0/1 and on 0/1 the moment a control changes. The cores have none: whatever drives a core already knows the values. Open [p State outlet] (also a tab at the top) to see it read by name with [route drive ceiling release lookahead truepeak on]."
                 }
             },
             {
@@ -1473,9 +1473,8 @@
                             "modernui": 1
                         },
                         "classnamespace": "box",
-                        "rect": [ 0.0, 26.0, 793.0, 656.0 ],
+                        "rect": [ 0.0, 26.0, 1520.0, 731.0 ],
                         "showontab": 1,
-                        "visible": 1,
                         "boxes": [
                             {
                                 "box": {
@@ -1499,7 +1498,7 @@
                                     "numinlets": 1,
                                     "numoutlets": 0,
                                     "patching_rect": [ 30.0, 15.0, 600.0, 60.0 ],
-                                    "text": "Each br.limit UI/core sends its state out of its LAST outlet as named messages: drive <dB>, ceiling <dBFS>, release <ms>, lookahead <ms>, truepeak 0/1 and on 0/1, the moment a control changes. Read them by NAME with [route drive ceiling release lookahead truepeak on], never by position: names stay put when a tool gains controls."
+                                    "text": "Each br.limit UI sends its state out of its LAST outlet as named messages: drive <dB>, ceiling <dBFS>, release <ms>, lookahead <ms>, truepeak 0/1 and on 0/1, the moment a control changes. Read them by NAME with [route drive ceiling release lookahead truepeak on], never by position: names stay put when a tool gains controls."
                                 }
                             },
                             {
@@ -1715,7 +1714,7 @@
                             }
                         ]
                     },
-                    "patching_rect": [ 893.0, 348.0, 128.0, 22.0 ],
+                    "patching_rect": [ 820.0, 354.0, 128.0, 22.0 ],
                     "text": "p \"State outlet\""
                 }
             }
@@ -1835,7 +1834,7 @@
             {
                 "patchline": {
                     "destination": [ "obj-b", 0 ],
-                    "midpoints": [ 811.5, 125.49409484863281, 1061.5, 125.49409484863281 ],
+                    "midpoints": [ 738.5, 131.4940948486328, 988.5, 131.4940948486328 ],
                     "order": 0,
                     "source": [ "obj-source", 0 ]
                 }
