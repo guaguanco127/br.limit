@@ -484,16 +484,16 @@
                                             "rect": [
                                                 134.0,
                                                 87.0,
-                                                1300.0,
-                                                884.0
+                                                1331.0,
+                                                900.0
                                             ],
                                             "boxes": [
                                                 {
                                                     "box": {
                                                         "maxclass": "codebox",
                                                         "patching_rect": [
-                                                            26.0,
-                                                            307.0,
+                                                            20.0,
+                                                            421.0,
                                                             1040.0,
                                                             900.0
                                                         ],
@@ -516,9 +516,9 @@
                                                         "maxclass": "newobj",
                                                         "text": "out 1 @comment \"Left Out (Signal)\"",
                                                         "patching_rect": [
-                                                            30.0,
-                                                            1321.0,
-                                                            199.0,
+                                                            20.0,
+                                                            1351.0,
+                                                            205.0,
                                                             22.0
                                                         ],
                                                         "numoutlets": 0,
@@ -533,9 +533,9 @@
                                                         "maxclass": "newobj",
                                                         "text": "out 2 @comment \"Right Out (Signal)\"",
                                                         "patching_rect": [
-                                                            451.0,
-                                                            1334.0,
-                                                            207.0,
+                                                            530.5,
+                                                            1351.0,
+                                                            213.0,
                                                             22.0
                                                         ],
                                                         "numoutlets": 0,
@@ -549,12 +549,12 @@
                                                     "box": {
                                                         "maxclass": "newobj",
                                                         "text": "out 3 @comment \"Gain Reduction (Signal) in dB, positive: 0 = none, 6 = turned down 6 dB. For meters\"",
-                                                        "linecount": 5,
+                                                        "linecount": 3,
                                                         "patching_rect": [
-                                                            955.0,
-                                                            1342.0,
-                                                            140.0,
-                                                            76.0
+                                                            1041.0,
+                                                            1351.0,
+                                                            200.0,
+                                                            49.0
                                                         ],
                                                         "numoutlets": 0,
                                                         "fontsize": 12.0,
@@ -570,7 +570,7 @@
                                                         "patching_rect": [
                                                             20.0,
                                                             20.0,
-                                                            183.0,
+                                                            189.0,
                                                             22.0
                                                         ],
                                                         "numoutlets": 1,
@@ -588,9 +588,9 @@
                                                         "maxclass": "newobj",
                                                         "text": "in 2 @comment \"Right In (Signal)\"",
                                                         "patching_rect": [
-                                                            246.0,
+                                                            224.0,
                                                             20.0,
-                                                            191.0,
+                                                            197.0,
                                                             22.0
                                                         ],
                                                         "numoutlets": 1,
@@ -607,12 +607,12 @@
                                                     "box": {
                                                         "maxclass": "newobj",
                                                         "text": "in 3 @comment \"Drive (Signal/Float) dB 0. to 24. Pushes the input into the limiter: louder, and the Ceiling still holds. Glides over 20 ms. Off bypasses it. Default 0\" @default 0",
-                                                        "linecount": 10,
+                                                        "linecount": 6,
                                                         "patching_rect": [
-                                                            298.0,
-                                                            56.0,
-                                                            120.0,
-                                                            143.0
+                                                            436.0,
+                                                            20.0,
+                                                            200.0,
+                                                            89.0
                                                         ],
                                                         "numoutlets": 1,
                                                         "fontsize": 12.0,
@@ -628,12 +628,12 @@
                                                     "box": {
                                                         "maxclass": "newobj",
                                                         "text": "in 4 @comment \"Ceiling (Signal/Float) dBFS -30. to 0. The output never goes above it. Glides over 20 ms. Default -0.3\" @default -0.3",
-                                                        "linecount": 8,
+                                                        "linecount": 5,
                                                         "patching_rect": [
-                                                            444.0,
-                                                            48.0,
-                                                            120.0,
-                                                            116.0
+                                                            651.0,
+                                                            20.0,
+                                                            200.0,
+                                                            76.0
                                                         ],
                                                         "numoutlets": 1,
                                                         "fontsize": 12.0,
@@ -649,12 +649,12 @@
                                                     "box": {
                                                         "maxclass": "newobj",
                                                         "text": "in 5 @comment \"Release (Signal/Float) ms 1. to 1000. How fast the level comes back after a peak. Short = louder but can distort, long = smoother. Default 100\" @default 100",
-                                                        "linecount": 10,
+                                                        "linecount": 6,
                                                         "patching_rect": [
-                                                            574.0,
-                                                            48.0,
-                                                            120.0,
-                                                            143.0
+                                                            866.0,
+                                                            20.0,
+                                                            200.0,
+                                                            89.0
                                                         ],
                                                         "numoutlets": 1,
                                                         "fontsize": 12.0,
@@ -670,12 +670,12 @@
                                                     "box": {
                                                         "maxclass": "newobj",
                                                         "text": "in 6 @comment \"Lookahead (Signal/Float) ms 0. to 5. 0 = no latency, the gain drops on the peak itself and can sound harsh on hard hits. Above 0 the gain drops that much early, cleaner, and the audio is late by the same amount. Changing it fades the output out and back in over about 20 ms: set it before you play. Default 1.5\" @default 1.5",
-                                                        "linecount": 19,
+                                                        "linecount": 11,
                                                         "patching_rect": [
-                                                            704.0,
-                                                            8.0,
-                                                            120.0,
-                                                            263.0
+                                                            1081.0,
+                                                            20.0,
+                                                            200.0,
+                                                            157.0
                                                         ],
                                                         "numoutlets": 1,
                                                         "fontsize": 12.0,
@@ -691,12 +691,12 @@
                                                     "box": {
                                                         "maxclass": "newobj",
                                                         "text": "in 7 @comment \"True Peak (Signal/Int) 0 off, 1 on: also catches peaks between samples, which can still clip a converter or an mp3. Adds 6 samples latency. Switching fades out and back in like Lookahead. Default 0\" @default 0",
-                                                        "linecount": 13,
+                                                        "linecount": 8,
                                                         "patching_rect": [
-                                                            834.0,
-                                                            48.0,
-                                                            120.0,
-                                                            183.0
+                                                            826.0,
+                                                            265.0,
+                                                            200.0,
+                                                            116.0
                                                         ],
                                                         "numoutlets": 1,
                                                         "fontsize": 12.0,
@@ -712,12 +712,12 @@
                                                     "box": {
                                                         "maxclass": "newobj",
                                                         "text": "in 8 @comment \"On/Off (Signal/Int) 1 on, 0 off. Off: the input passes untouched, still delayed by the latency so nothing jumps. Fades over 20 ms. Default 1\" @default 1",
-                                                        "linecount": 10,
+                                                        "linecount": 6,
                                                         "patching_rect": [
-                                                            964.0,
-                                                            48.0,
-                                                            120.0,
-                                                            143.0
+                                                            1041.0,
+                                                            265.0,
+                                                            200.0,
+                                                            89.0
                                                         ],
                                                         "numoutlets": 1,
                                                         "fontsize": 12.0,
@@ -788,6 +788,12 @@
                                                         "destination": [
                                                             "obj-code",
                                                             6
+                                                        ],
+                                                        "midpoints": [
+                                                            835.5,
+                                                            396.0,
+                                                            904.6428571428571,
+                                                            396.0
                                                         ]
                                                     }
                                                 },
@@ -800,6 +806,12 @@
                                                         "destination": [
                                                             "obj-code",
                                                             5
+                                                        ],
+                                                        "midpoints": [
+                                                            1090.5,
+                                                            240.0,
+                                                            758.7857142857143,
+                                                            240.0
                                                         ]
                                                     }
                                                 },
@@ -812,6 +824,12 @@
                                                         "destination": [
                                                             "obj-code",
                                                             4
+                                                        ],
+                                                        "midpoints": [
+                                                            875.5,
+                                                            228.0,
+                                                            612.9285714285714,
+                                                            228.0
                                                         ]
                                                     }
                                                 },
@@ -824,6 +842,12 @@
                                                         "destination": [
                                                             "obj-code",
                                                             3
+                                                        ],
+                                                        "midpoints": [
+                                                            660.5,
+                                                            216.0,
+                                                            467.07142857142856,
+                                                            216.0
                                                         ]
                                                     }
                                                 },
@@ -836,6 +860,12 @@
                                                         "destination": [
                                                             "obj-code",
                                                             2
+                                                        ],
+                                                        "midpoints": [
+                                                            445.5,
+                                                            204.0,
+                                                            321.2142857142857,
+                                                            204.0
                                                         ]
                                                     }
                                                 },
@@ -848,6 +878,12 @@
                                                         "destination": [
                                                             "obj-code",
                                                             1
+                                                        ],
+                                                        "midpoints": [
+                                                            233.5,
+                                                            192.0,
+                                                            175.35714285714286,
+                                                            192.0
                                                         ]
                                                     }
                                                 },
