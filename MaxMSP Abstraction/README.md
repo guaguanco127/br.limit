@@ -44,7 +44,7 @@ With Lookahead at 0 the limiter adds **no latency at all**: the gain drops on th
 
 Above 0 the limiter sees each peak coming and turns down smoothly over the lookahead time, which is cleaner. To do that, the audio is delayed by the same amount: 1.5 ms is about the delay of standing half a metre further from a speaker. It only matters if you mix the limited signal with an unlimited copy of the same sound, which would sound phasey.
 
-True Peak adds 6 more samples of latency (about 0.13 ms at 48 kHz).
+True Peak adds 6 more samples of latency.
 
 Changing Lookahead or True Peak changes the latency, so instead of jumping the output fades out, switches while silent, and fades back in, about 10 to 20 ms in all. Set them before you play. The UI versions use a menu of steps (0, 0.5, 1, 1.5, 3, 5 ms) for that reason, so each change is one deliberate pick.
 
